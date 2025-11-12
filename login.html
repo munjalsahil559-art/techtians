@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>CivicConnect - Sign In / Sign Up</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      margin:0; padding:0;
+      background: linear-gradient(135deg, #6dd5ed 0%, #2193b0 100%);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #003a5c;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .container {
+      background: white;
+      border-radius: 20px;
+      padding: 30px 40px;
+      width: 400px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.14);
+      box-sizing: border-box;
+      text-align: center;
+    }
+    h2 {
+      margin-bottom: 25px;
+      font-weight: 700;
+      color: #1b4075;
+      text-transform: uppercase;
+      letter-spacing: 1.1px;
+    }
+    .toggle-buttons {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 25px;
+      gap: 15px;
+    }
+    .toggle-buttons button {
+      background: #cce8ff;
+      color: #1577cd;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 25px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.25s, color 0.25s;
+      flex: 1;
+    }
+    .toggle-buttons button.active {
+      background: #1577cd;
+      color: white;
+      box-shadow: 0 0 6px #0f4e99;
+    }
+    form > label {
+      display: block;
+      font-weight: 600;
+      text-align: left;
+      margin: 10px 0 6px;
+    }
+    form input, form select {
+      width: 100%;
+      padding: 11px 14px;
+      margin-bottom: 20px;
+      border: 1.7px solid #89c9f7;
+      border-radius: 8px;
+      font-size: 1em;
+      box-sizing: border-box;
+      font-family: inherit;
+    }
+    form input:focus, form select:focus {
+      border-color: #0a4a94;
+      outline: none;
+    }
+    button.submit-btn {
+      background: #1360ab;
+      color: white;
+      border-radius: 12px;
+      padding: 14px 0;
+      font-weight: 700;
+      font-size: 1.1em;
+      border: none;
+      width: 100%;
+      cursor: pointer;
+      margin-top: 15px;
+      transition: background 0.25s;
+    }
+    button.submit-btn:hover {
+      background: #0e4580;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" role="main" aria-labelledby="formTitle">
+    <h2 id="formTitle">User Sign Up</h2>
+    <div class="toggle-buttons" role="tablist">
+      <button class="active" id="signUpBtn" role="tab" aria-selected="true" aria-controls="authForm" tabindex="0">Sign Up</button>
+      <button id="signInBtn" role="tab" aria-selected="false" aria-controls="authForm" tabindex="-1">Sign In</button>
+    </div>
+
+    <form id="authForm" autocomplete="off" novalidate>
+      <label for="roleSelect">Select Role</label>
+      <select id="roleSelect" aria-required="true">
+        <option value="user" selected>User</option>
+        <option value="admin">Admin</option>
+      </select>
+
+      <div id="fullNameGroup">
+        <label for="fullName">Full Name</label>
+        <input type="text" id="fullName" aria-required="true" placeholder="Your full name" minlength="3" />
+      </div>
+
+      <label for="email">Email</label>
+      <input type="email" id="email" aria-required="true" placeholder="your.email@example.com" />
+
+      <label for="phone">Phone Number</label>
+      <input type="tel" id="phone" aria-required="true" placeholder="Digits only (10-15)" pattern="\d{10,15}" maxlength="15" />
+
+      <label for="password">Password</label>
+      <input type="password" id="password" aria-required="true" placeholder="Enter password" minlength="6" />
+
+      <button type="submit" class="submit-btn" id="submitBtn">Sign Up</button>
+    </form>
+  </div>
+
+  <script>
+    const signUpBtn = document.getElementById('signUpBtn');
+    const signInBtn = document.getElementById('signInBtn');
+    const formTitle = document.getElementById('formTitle');
+    const authForm = document.getElementById('authForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const fullNameGroup = document.getElementById('fullNameGroup');
+    const roleSelect = document.getElementById('roleSelect');
+
+    function switchToSignIn() {
+      formTitle.textContent = 'User Sign In';
+      submitBtn.textContent = 'Sign In';
+      signInBtn.classList.add('active');
+      signInBtn.setAttribute('aria-selected', 'true');
+      signInBtn.tabIndex = 0;
+
+      signUpBtn.classList.remove('active');
+      signUpBtn.setAttribute('aria-selected', 'false');
+      signUpBtn.tabIndex = -1;
+
+      fullNameGroup.style.display = 'none';
+    }
+
+    function switchToSignUp() {
+      formTitle.textContent = 'User Sign Up';
+      submitBtn.textContent = 'Sign Up';
+      signUpBtn.classList.add('active');
+      signUpBtn.setAttribute('aria-selected', 'true');
+      signUpBtn.tabIndex = 0;
+
+      signInBtn.classList.remove('active');
+      signInBtn.setAttribute('aria-selected', 'false');
+      signInBtn.tabIndex = -1;
+
+      fullNameGroup.style.display = 'block';
+    }
+
+    signUpBtn.addEventListener('click', switchToSignUp);
+    signInBtn.addEventListener('click', switchToSignIn);
+
+    authForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const role = roleSelect.value;
+      const email = document.getElementById('email').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const password = document.getElementById('password').value.trim();
+
+      if (!email || !phone || phone.length < 10 || password.length < 8) {
+        alert('Please enter valid email, phone, and password (min 4 latters,1 symbol,3number).');
+        return;
+      }
+
+      if (signUpBtn.classList.contains('active')) {
+        // Sign Up mode
+        const fullName = document.getElementById('fullName').value.trim();
+        if (!fullName || fullName.length < 3) {
+          alert('Please enter a valid full name.');
+          return;
+        }
+        let usersDB = JSON.parse(localStorage.getItem('civic_users_db') || '{}');
+        if (usersDB[email]) {
+          alert('Email already registered, please sign in.');
+          return;
+        }
+        usersDB[email] = {name: fullName, email, phone, password, role};
+        localStorage.setItem('civic_users_db', JSON.stringify(usersDB));
+        localStorage.setItem('civic_user', JSON.stringify(usersDB[email]));
+        alert(`Sign up successful as ${role.charAt(0).toUpperCase() + role.slice(1)}`);
+      } else {
+        // Sign In mode
+        let usersDB = JSON.parse(localStorage.getItem('civic_users_db') || '{}');
+        const user = usersDB[email];
+        if (user && user.password === password && user.role === role) {
+          localStorage.setItem('civic_user', JSON.stringify(user));
+          alert(`Sign in successful as ${role.charAt(0).toUpperCase() + role.slice(1)}`);
+        } else {
+          alert('Invalid credentials or role. Please try again or sign up.');
+          return;
+        }
+      }
+
+      if (role === 'admin') {
+        window.location.href = 'admin_dashboard.html';
+      } else {
+        window.location.href = 'complaints.html';
+      }
+    });
+  </script>
+</body>
+</html>
