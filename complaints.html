@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>CivicConnect - Register Complaint</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #6dd5ed 0%, #2193b0 100%);
+      margin: 0; padding: 30px 15px;
+      color: #00475e;
+    }
+    .container {
+      max-width: 600px;
+      background: white;
+      margin: auto;
+      padding: 25px 30px;
+      border-radius: 20px;
+      box-shadow: 0 12px 34px rgba(0,0,0,0.12);
+      box-sizing: border-box;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 25px;
+      font-weight: 700;
+      font-size: 1.8rem;
+      color: #036;
+    }
+    label {
+      display: block;
+      margin: 15px 0 8px 0;
+      font-weight: 700;
+      color: #036;
+    }
+    select, input[type="file"], textarea, input[type="text"], input[type="email"], input[type="tel"] {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 8px;
+      border: 1.5px solid #89c9f7;
+      font-family: inherit;
+      font-size: 1em;
+      box-sizing: border-box;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 90px;
+    }
+    button {
+      margin-top: 30px;
+      background-color: #074a9e;
+      border: none;
+      padding: 14px 0;
+      width: 100%;
+      color: white;
+      font-weight: 700;
+      font-size: 1.1em;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.25s;
+    }
+    button:hover {
+      background-color: #0a3e7a;
+    }
+    .preview-img {
+      max-width: 100%;
+      margin-top: 15px;
+      border-radius: 10px;
+      display: none;
+    }
+    #locationInfo {
+      background: #dbefff;
+      padding: 12px 18px;
+      border-radius: 8px;
+      margin-top: 16px;
+      font-weight: 600;
+      color: #045a9c;
+      display: none;
+    }
+    .success-msg {
+      background: #c6efcf;
+      border-left: 6px solid #2d914f;
+      padding: 15px 20px;
+      margin-top: 25px;
+      font-weight: 700;
+      color: #216724;
+      border-radius: 10px;
+      display: none;
+      text-align: center;
+    }
+    .history-section {
+      margin-top: 45px;
+      border-top: 3px solid #035394;
+      padding-top: 30px;
+    }
+    .history-section h3 {
+      color: #023c6f;
+      font-weight: 800;
+      margin-bottom: 20px;
+    }
+    .complaint-card {
+      background: #e7f0ff;
+      border-radius: 15px;
+      padding: 18px 25px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 10px #90bbff90;
+    }
+    .complaint-header {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 700;
+      font-size: 1.03em;
+      color: #074a9e;
+    }
+    .complaint-status {
+      color: #128465;
+      font-weight: 600;
+      font-style: italic;
+    }
+    .complaint-description {
+      margin-top: 12px;
+      font-size: 0.95em;
+      color: #014d7a;
+      white-space: pre-wrap;
+    }
+    .complaint-meta {
+      margin-top: 10px;
+      font-size: 0.88em;
+      font-weight: 600;
+      color: #034c8e;
+    }
+    .logout-btn {
+      background: #074a9e;
+      color: white;
+      border: none;
+      padding: 10px 25px;
+      font-weight: 700;
+      font-size: 1em;
+      border-radius: 10px;
+      cursor: pointer;
+      margin: 20px 0 0;
+      width: 100%;
+      transition: background-color 0.3s;
+    }
+    .logout-btn:hover {
+      background: #053468;
+    }
+    @media (max-width: 600px) {
+      body {
+        padding: 20px 8px;
+      }
+      .container {
+        padding: 20px 15px;
+      }
+      header {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <button class="logout-btn" onclick="logout()">Logout</button>
+    <header>Register a New Complaint</header>
+
+    <form id="complaintForm" autocomplete="off" novalidate>
+      <label for="complaintType">Complaint Type</label>
+      <select id="complaintType" required>
+        <option value="">-- Select Complaint Type --</option>
+        <option value="Pothole">Pothole</option>
+        <option value="Garbage">Garbage</option>
+        <option value="Water Leak">Water Leak</option>
+        <option value="Street Light">Street Light</option>
+        <option value="Drainage">Drainage</option>
+        <option value="Road Damage">Road Damage</option>
+        <option value="Park Maintenance">Park Maintenance</option>
+        <option value="Other">Other</option>
+      </select>
+
+      <label for="complaintDescription">Description</label>
+      <textarea id="complaintDescription" placeholder="Describe the issue in detail..." required></textarea>
+
+      <label for="complaintPhoto">Upload Photo</label>
+      <input type="file" id="complaintPhoto" accept="image/*" required />
+      <img id="imagePreview" class="preview-img" alt="Preview">
+
+      <label>Location</label>
+      <button type="button" onclick="getLocation()" style="background:#074a9e;color:white;border:none;padding:12px;border-radius:8px;cursor:pointer;">📍 Get Current Location</button>
+      <div id="locationInfo"><strong>Latitude:</strong> <span id="latitude"></span><br/><strong>Longitude:</strong> <span id="longitude"></span></div>
+
+      <input type="hidden" id="lat" />
+      <input type="hidden" id="lng" />
+
+      <button type="submit">Submit Complaint</button>
+    </form>
+
+    <div class="success-msg" id="successMsg"></div>
+
+    <section class="history-section" aria-label="Complaint History">
+      <h3>Your Complaint History</h3>
+      <div id="complaintsHistory">No complaints found. Submit one above!</div>
+    </section>
+  </div>
+
+  <script>
+    let currentUser = localStorage.getItem('civic_user');
+    if(!currentUser) {
+      alert('Please login first!');
+      window.location.href = 'login.html';
+    }
+    currentUser = JSON.parse(currentUser);
+
+    const photoInput = document.getElementById('complaintPhoto');
+    const imagePreview = document.getElementById('imagePreview');
+    photoInput.addEventListener('change', e => {
+      const file = e.target.files[0];
+      if(!file) {
+        imagePreview.style.display = 'none';
+        imagePreview.src = '';
+        return;
+      }
+      if(!file.type.startsWith('image/')) {
+        alert('Please upload a valid image file.');
+        photoInput.value = '';
+        imagePreview.style.display = 'none';
+        imagePreview.src = '';
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = event => {
+        imagePreview.src = event.target.result;
+        imagePreview.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    });
+
+    function getLocation() {
+      if (!navigator.geolocation) {
+        alert('Geolocation is not supported by your browser');
+        return;
+      }
+      const latEl = document.getElementById('latitude');
+      const lngEl = document.getElementById('longitude');
+      const locationInfo = document.getElementById('locationInfo');
+      locationInfo.style.display = 'block';
+      latEl.textContent = 'Fetching...';
+      lngEl.textContent = 'Fetching...';
+      navigator.geolocation.getCurrentPosition(pos => {
+        const {latitude, longitude} = pos.coords;
+        latEl.textContent = latitude.toFixed(6);
+        lngEl.textContent = longitude.toFixed(6);
+        document.getElementById('lat').value = latitude;
+        document.getElementById('lng').value = longitude;
+      }, err=>{
+        alert('Location fetch failed: '+err.message);
+        locationInfo.style.display = 'none';
+      });
+    }
+    window.getLocation = getLocation;
+
+    function renderComplaints() {
+      const container = document.getElementById('complaintsHistory');
+      let complaints = JSON.parse(localStorage.getItem('civic_complaints') || '[]');
+      complaints = complaints.filter(c=>c.userEmail === currentUser.email);
+      if(complaints.length === 0) {
+        container.innerHTML = '<p style="color:#066699;">No complaints found. Submit one above!</p>';
+        return;
+      }
+      container.innerHTML = complaints.map(c => `
+        <div class="complaint-card" tabindex="0" aria-label="Complaint ${c.id}, status ${c.status}">
+          <div class="complaint-header">
+            <div>${c.type}</div>
+            <div class="complaint-status">${c.status}</div>
+          </div>
+          <div class="complaint-description">${c.description}</div>
+          <div class="complaint-meta">
+            Tracking ID: ${c.id} | Date: ${c.date} | Location: ${parseFloat(c.latitude).toFixed(4)},${parseFloat(c.longitude).toFixed(4)}
+          </div>
+        </div>
+      `).join('');
+    }
+    renderComplaints();
+
+    document.getElementById('complaintForm').addEventListener('submit', e=>{
+      e.preventDefault();
+      if(!e.target.checkValidity()) {
+        e.target.reportValidity();
+        return;
+      }
+      const photoFile = photoInput.files[0];
+      if(!photoFile) {
+        alert('Please upload a photo.');
+        return;
+      }
+      const lat = document.getElementById('lat').value;
+      const lng = document.getElementById('lng').value;
+      if(!lat || !lng) {
+        alert('Please get your location.');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = evt=>{
+        let complaints = JSON.parse(localStorage.getItem('civic_complaints') || '[]');
+        const newComplaint = {
+          id: 'CC'+Date.now().toString().slice(-7),
+          userName: currentUser.name,
+          userEmail: currentUser.email,
+          userPhone: currentUser.phone,
+          type: document.getElementById('complaintType').value,
+          description: document.getElementById('complaintDescription').value.trim(),
+          photo: evt.target.result,
+          latitude: lat,
+          longitude: lng,
+          status: 'Pending',
+          date: new Date().toLocaleString()
+        };
+        complaints.push(newComplaint);
+        localStorage.setItem('civic_complaints', JSON.stringify(complaints));
+        document.getElementById('successMsg').textContent = `Complaint submitted successfully! Tracking ID: ${newComplaint.id}`;
+        document.getElementById('successMsg').style.display = 'block';
+        e.target.reset();
+        imagePreview.style.display = 'none';
+        document.getElementById('locationInfo').style.display = 'none';
+        renderComplaints();
+        setTimeout(()=>document.getElementById('successMsg').style.display='none', 7000);
+      };
+      reader.readAsDataURL(photoFile);
+    });
+
+    function logout() {
+      localStorage.removeItem('civic_user');
+      window.location.href = 'login.html';
+    }
+  </script>
+</body>
+</html>
