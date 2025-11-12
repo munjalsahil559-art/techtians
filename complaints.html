@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>CivicConnect - Register Complaint with OTP</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    /* Simplified styling for clarity*/
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #e4f1ff;
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+      display: flex;
+      justify-content: center;
+    }
+    .container {
+      max-width: 450px;
+      background: white;
+      padding: 25px 30px 40px 30px;
+      border-radius: 18px;
+      box-shadow: 0 10px 28px rgba(115, 145, 187, 0.25);
+    }
+    h2 {
+      margin-bottom: 20px;
+      color: #004f7c;
+      font-weight: 700;
+      text-align: center;
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      margin-top: 20px;
+      color: #004b77;
+    }
+    input, button, select, textarea {
+      width: 100%;
+      padding: 10px 13px;
+      border-radius: 8px;
+      border: 1.7px solid #a3c0de;
+      font-family: inherit;
+      font-size: 1em;
+      box-sizing: border-box;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: #2472b3;
+      outline: none;
+    }
+    textarea {
+      height: 80px;
+      resize: vertical;
+    }
+    button {
+      background: #2077c7;
+      border: none;
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 25px;
+      transition: background 0.25s;
+    }
+    button:hover:not(:disabled) {
+      background: #145a8f;
+    }
+    button:disabled {
+      background: #9dbedc;
+      cursor: not-allowed;
+    }
+    .info-msg {
+      color: #07689f;
+      font-weight: 600;
+      margin-top: 15px;
+      text-align: center;
+      font-style: italic;
+    }
+    .otp-section {
+      margin-top: 25px;
+      border: 1.2px solid #659ecc;
+      border-radius: 10px;
+      padding: 20px 18px;
+    }
+    .call-admin {
+      margin-top: 25px;
+      font-weight: 600;
+      color: #2077c7;
+      cursor: pointer;
+      text-align: center;
+    }
+    .call-admin:hover {
+      text-decoration: underline;
+    }
+
+  /* Typical container */
+.container {
+  width: 90%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 15px;
+}
+
+/* Responsive typography */
+h1, h2 {
+  font-size: clamp(1.5rem, 2vw, 2.5rem);
+}
+
+/* Responsive buttons */
+button {
+  min-height: 44px;
+  font-size: clamp(1rem, 1.5vw, 1.2rem);
+}
+
+/* Layout adjustments for tablets */
+@media (max-width: 900px) {
+  .stats-bar {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+/* Mobile adjustments */
+@media (max-width: 600px) {
+  /* Stack multi-column layouts vertically */
+  table, thead, tbody, tr, th, td {
+    display: block;
+  }
+  thead {
+    display: none; /* Hide table header on mobiles */
+  }
+  tbody tr {
+    margin-bottom: 25px;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    padding: 15px;
+  }
+  tbody td {
+    text-align: right;
+    position: relative;
+    padding-left: 50%;
+  }
+  tbody td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 15px;
+    font-weight: 600;
+    color: #222;
+    text-transform: capitalize;
+  }
+}
+
+  </style>
+</head>
+<body>
+  <div class="container" role="main">
+    <h2>Register Complaint (with OTP verification)</h2>
+
+    <div id="otpContainer" class="otp-section">
+      <label for="phoneInput">Enter Mobile Number for OTP</label>
+      <input type="tel" id="phoneInput" maxlength="15" placeholder="Enter phone (10-15 digits)" />
+      <button id="sendOtpBtn" disabled>Send OTP</button>
+
+      <div id="otpVerification" style="display:none;">
+        <label for="otpInput">Enter OTP</label>
+        <input type="text" id="otpInput" maxlength="6" placeholder="Enter OTP" />
+        <button id="verifyOtpBtn" disabled>Verify OTP</button>
+      </div>
+
+      <div id="otpInfo" class="info-msg"></div>
+    </div>
+
+    <form id="complaintForm" style="display:none;" autocomplete="off" novalidate>
+      <label for="complaintType">Complaint Type</label>
+      <select id="complaintType" required>
+        <option value="">-- Select Complaint Type --</option>
+        <option value="Pothole">Pothole</option>
+        <option value="Garbage">Garbage</option>
+        <option value="Water Leak">Water Leak</option>
+        <option value="Street Light">Street Light</option>
+        <option value="Drainage">Drainage</option>
+        <option value="Road Damage">Road Damage</option>
+        <option value="Park Maintenance">Park Maintenance</option>
+        <option value="Other">Other</option>
+      </select>
+
+      <label for="complaintDescription">Description</label>
+      <textarea id="complaintDescription" rows="3" placeholder="Describe the issue..." required></textarea>
+
+      <label for="complaintPhoto">Upload Photo</label>
+      <input type="file" id="complaintPhoto" accept="image/*" required />
+
+      <label>Location</label>
+      <button type="button" onclick="getLocation()" style="background:#2077c7;color:white;border:none;padding:12px;border-radius:8px;cursor:pointer;">
+        📍 Get Current Location
+      </button>
+      <div id="locationInfo" style="margin-top:12px; display:none;">
+        <strong>Latitude:</strong> <span id="latitude"></span><br/>
+        <strong>Longitude:</strong> <span id="longitude"></span>
+      </div>
+
+      <input type="hidden" id="lat" />
+      <input type="hidden" id="lng" />
+
+      <button type="submit">Submit Complaint</button>
+    </form>
+
+    <div style="text-align:center; margin-top: 25px; font-weight: 600; color:#2077c7;">
+      Call in office   to register complaint: <a href="tel:+91 9915778764" style="color:#2077c7; text-decoration: underline;">+91 9915778764</a>
+    </div>
+  </div>
+
+<div style="margin-top: 30px; text-align:center; font-weight:600; color:#2077c7; font-size: 1.05em;">
+  Contact Admin:
+  <a href="tel:+919915778764" style="margin: 0 15px; text-decoration:none;" aria-label="Call Admin at 9915778764" title="Call Admin">📞 Call</a>
+  <a href="https://wa.me/919915778764" target="_blank" rel="noopener noreferrer" style="margin: 0 15px; text-decoration:none;" aria-label="Chat on WhatsApp with Admin" title="WhatsApp Admin">💬 WhatsApp</a>
+  <a href="mailto:munjalsahil559@gmail.com" style="margin: 0 15px; text-decoration:none;" aria-label="Email Admin at munjalsahil559@gmail.com" title="Email Admin">✉️ Email</a>
+</div>
+
+  <script>
+    let generatedOtp = null;
+    const phoneInput = document.getElementById('phoneInput');
+    const sendOtpBtn = document.getElementById('sendOtpBtn');
+    const otpVerification = document.getElementById('otpVerification');
+    const otpInput = document.getElementById('otpInput');
+    const verifyOtpBtn = document.getElementById('verifyOtpBtn');
+    const otpInfo = document.getElementById('otpInfo');
+    const complaintForm = document.getElementById('complaintForm');
+    const locationInfo = document.getElementById('locationInfo');
+    const latitudeSpan = document.getElementById('latitude');
+    const longitudeSpan = document.getElementById('longitude');
+
+    // Validate phone input for 10-15 digits
+    phoneInput.addEventListener('input', () => {
+      const phone = phoneInput.value.trim();
+      sendOtpBtn.disabled = !/^\d{10,15}$/.test(phone);
+    });
+
+    sendOtpBtn.addEventListener('click', () => {
+      generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+      otpInfo.textContent = `OTP sent! (Simulated OTP: ${generatedOtp})`;
+      otpVerification.style.display = 'block';
+      verifyOtpBtn.disabled = true;
+      otpInput.value = '';
+      complaintForm.style.display = 'none';
+    });
+
+    // Enable verify button when OTP input length is 6 digits
+    otpInput.addEventListener('input', () => {
+      verifyOtpBtn.disabled = otpInput.value.trim().length !== 6;
+    });
+
+    verifyOtpBtn.addEventListener('click', () => {
+      if (otpInput.value.trim() === generatedOtp) {
+        otpInfo.textContent = 'OTP Verified Successfully! You can now register your complaint.';
+        complaintForm.style.display = 'block';
+        otpVerification.style.display = 'none';
+        phoneInput.disabled = true;
+        sendOtpBtn.disabled = true;
+      } else {
+        otpInfo.textContent = 'Invalid OTP! Please try again.';
+      }
+    });
+
+    // Get geolocation
+    function getLocation() {
+      if (!navigator.geolocation) {
+        alert('Geolocation is not supported by your browser');
+        return;
+      }
+      locationInfo.style.display = 'block';
+      latitudeSpan.textContent = 'Fetching...';
+      longitudeSpan.textContent = 'Fetching...';
+
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          const {latitude, longitude} = position.coords;
+          latitudeSpan.textContent = latitude.toFixed(6);
+          longitudeSpan.textContent = longitude.toFixed(6);
+          document.getElementById('lat').value = latitude;
+          document.getElementById('lng').value = longitude;
+        },
+        error => {
+          alert('Could not get location: ' + error.message);
+          locationInfo.style.display = 'none';
+        }
+      );
+    }
+    window.getLocation = getLocation;
+
+    // Load user info from storage if logged in, or else hide phone related UI for OTP
+    let currentUser = localStorage.getItem('civic_user');
+    if (currentUser) {
+      currentUser = JSON.parse(currentUser);
+      phoneInput.value = currentUser.phone || '';
+      sendOtpBtn.disabled = false;
+    } else {
+      alert('Please login first!');
+      window.location.href = 'login.html';
+    }
+
+    // Handle complaint form submission
+    complaintForm.addEventListener('submit', e => {
+      e.preventDefault();
+      // Validate form
+      if (!complaintForm.checkValidity()) {
+        complaintForm.reportValidity();
+        return;
+      }
+
+      const type = document.getElementById('complaintType').value;
+      const description = document.getElementById('complaintDescription').value.trim();
+      const photoFile = document.getElementById('complaintPhoto').files[0];
+      const lat = document.getElementById('lat').value;
+      const lng = document.getElementById('lng').value;
+
+      if (!photoFile) {
+        alert('Please upload a photo.');
+        return;
+      }
+      if (!lat || !lng) {
+        alert('Please get your location.');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = evt => {
+        const complaints = JSON.parse(localStorage.getItem('civic_complaints') || '[]');
+        const newComplaint = {
+          id: 'CC' + Date.now().toString().slice(-7),
+          userName: currentUser.name,
+          userEmail: currentUser.email,
+          userPhone: phoneInput.value.trim(),
+          type,
+          description,
+          photo: evt.target.result,
+          latitude: lat,
+          longitude: lng,
+          status: 'Pending',
+          date: new Date().toLocaleString()
+        };
+        complaints.push(newComplaint);
+        localStorage.setItem('civic_complaints', JSON.stringify(complaints));
+        alert(`Complaint submitted successfully! Tracking ID: ${newComplaint.id}`);
+        complaintForm.reset();
+        locationInfo.style.display = 'none';
+      };
+      reader.readAsDataURL(photoFile);
+    });
+  </script>
+</body>
+</html>
